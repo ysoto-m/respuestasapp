@@ -30,10 +30,6 @@ const Usuario = sequelize.define('Usuario', {
       isIn: [['sistema', 'supervisor', 'agente']]
     }
   },
-  gestionId: {
-    type: DataTypes.INTEGER,
-    allowNull: true
-  },
   estado: {
     type: DataTypes.STRING,
     defaultValue: 'activo',

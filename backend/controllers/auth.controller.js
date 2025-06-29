@@ -5,7 +5,7 @@ const { generateToken } = require('../utils/jwt');
 // Registrar nuevo usuario
 exports.register = async (req, res) => {
   try {
-    const { username, password, rol, nombre, apellido, gestionId } = req.body;
+    const { username, password, rol, nombre, apellido } = req.body;
 
     const exists = await Usuario.findOne({ where: { username } });
     if (exists) return res.status(400).json({ error: 'Usuario ya existe' });
@@ -17,8 +17,7 @@ exports.register = async (req, res) => {
       password_hash,
       rol,
       nombre,
-      apellido,
-      gestionId
+      apellido
     });
 
     res.status(201).json({
