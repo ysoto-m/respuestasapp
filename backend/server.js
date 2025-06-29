@@ -20,7 +20,7 @@ app.use('/api/plantillas', plantillaRoutes);
 
 const PORT = process.env.PORT || 3000;
 
-sequelize.sync().then(() => {
+sequelize.sync({ alter: true }).then(() => {
   console.log('✅ Conectado a la base de datos');
   app.listen(PORT, () => {
     console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
