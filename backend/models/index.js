@@ -7,6 +7,8 @@ const UsuarioGestion = require('./usuarioGestion.model');
 // Relaciones
 Usuario.belongsToMany(Gestion, { through: UsuarioGestion, foreignKey: 'usuarioId' });
 Gestion.belongsToMany(Usuario, { through: UsuarioGestion, foreignKey: 'gestionId' });
+Gestion.hasMany(Plantilla, { foreignKey: 'gestionId' });
+Plantilla.belongsTo(Gestion, { foreignKey: 'gestionId' });
 
 module.exports = {
   sequelize,

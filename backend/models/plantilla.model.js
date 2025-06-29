@@ -6,6 +6,14 @@ const Plantilla = sequelize.define('Plantilla', {
     type: DataTypes.TEXT,
     allowNull: false
   },
+  gestionId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'Gestiones',
+      key: 'id'
+    }
+  },
   visible: {
     type: DataTypes.BOOLEAN,
     defaultValue: true
