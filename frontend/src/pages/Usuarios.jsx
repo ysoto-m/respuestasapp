@@ -1,6 +1,6 @@
 // frontend/src/pages/Usuarios.jsx
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios from '../api/axios';
 
 function Usuarios() {
   const [usuarios, setUsuarios] = useState([]);
@@ -17,7 +17,7 @@ function Usuarios() {
 
   const cargarUsuarios = async () => {
     try {
-      const res = await axios.get('http://localhost:3000/api/usuarios', {
+      const res = await axios.get('/usuarios', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUsuarios(res.data);
@@ -29,11 +29,11 @@ function Usuarios() {
   const guardarUsuario = async () => {
     try {
       if (editando) {
-        await axios.put(`http://localhost:3000/api/usuarios/${editando}`, formulario, {
+        await axios.put(`/usuarios/${editando}`, formulario, {
           headers: { Authorization: `Bearer ${token}` }
         });
       } else {
-        await axios.post('http://localhost:3000/api/usuarios', formulario, {
+        await axios.post('/usuarios', formulario, {
           headers: { Authorization: `Bearer ${token}` }
         });
       }
@@ -47,7 +47,7 @@ function Usuarios() {
 
   const cambiarEstado = async (id) => {
     try {
-      await axios.patch(`http://localhost:3000/api/usuarios/${id}/estado`, {}, {
+      await axios.patch(`/usuarios/${id}/estado`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       cargarUsuarios();

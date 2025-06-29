@@ -24,7 +24,7 @@ const Dashboard = () => {
 
   const cargarUsuarios = async () => {
     try {
-      const res = await axios.get('http://localhost:3000/api/usuarios', {
+      const res = await axios.get('/usuarios', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUsuarios(res.data);
@@ -36,7 +36,7 @@ const Dashboard = () => {
 
   const cargarGestiones = async () => {
     try {
-      const res = await axios.get('http://localhost:3000/api/gestiones', {
+      const res = await axios.get('/gestiones', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setGestiones(res.data.map(g => ({ value: g.id, label: g.nombre })));
@@ -48,7 +48,7 @@ const Dashboard = () => {
 
   const cargarPlantillas = async () => {
     try {
-      const res = await axios.get('http://localhost:3000/api/plantillas', {
+      const res = await axios.get('/plantillas', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setPlantillas(res.data);
@@ -59,7 +59,7 @@ const Dashboard = () => {
 
   const crearUsuario = async () => {
     try {
-      await axios.post('http://localhost:3000/api/usuarios', {
+      await axios.post('/usuarios', {
         ...formUsuario,
         gestiones: gestionesSeleccionadas.map(g => g.value)
       }, { headers: { Authorization: `Bearer ${token}` } });
@@ -74,7 +74,7 @@ const Dashboard = () => {
 
   const agregarGestion = async () => {
     try {
-      await axios.post('http://localhost:3000/api/gestiones', { nombre: nuevaGestion }, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.post('/gestiones', { nombre: nuevaGestion }, { headers: { Authorization: `Bearer ${token}` } });
       setNuevaGestion('');
       cargarGestiones();
     } catch (err) {
@@ -84,7 +84,7 @@ const Dashboard = () => {
 
   const agregarPlantilla = async () => {
     try {
-      await axios.post('http://localhost:3000/api/plantillas', { texto: nuevaPlantilla }, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.post('/plantillas', { texto: nuevaPlantilla }, { headers: { Authorization: `Bearer ${token}` } });
       setNuevaPlantilla('');
       cargarPlantillas();
     } catch (err) {
@@ -94,7 +94,7 @@ const Dashboard = () => {
 
   const cambiarVisibilidad = async (id, visible) => {
     try {
-      await axios.put(`http://localhost:3000/api/plantillas/${id}/visible`, { visible }, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.put(`/plantillas/${id}/visible`, { visible }, { headers: { Authorization: `Bearer ${token}` } });
       cargarPlantillas();
     } catch (err) {
       console.error('Error al actualizar plantilla:', err);
@@ -103,7 +103,7 @@ const Dashboard = () => {
 
   const cambiarEstado = async (id) => {
     try {
-      await axios.patch(`http://localhost:3000/api/usuarios/${id}/estado`, {}, {
+      await axios.patch(`/usuarios/${id}/estado`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       cargarUsuarios();
