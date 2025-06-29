@@ -1,10 +1,10 @@
-// ✅ controllers/usuario.controller.js
-const Usuario = require('../models/usuario.model');
+const { Usuario, Gestion } = require('../models');
+const { hashPassword } = require('../utils/hash');
 
 exports.listarUsuarios = async (req, res) => {
   try {
-    const where = req.usuario.rol === 'supervisor' ? { gestionId: req.usuario.gestionId } : {};
-    const usuarios = await Usuario.findAll({ where });
+    const include = [{ model: Gestion, through: { attributes: [] } }];
+    const usuarios = await Usuario.findAll({ include });
     res.json(usuarios);
   } catch (error) {
     console.error(error);
@@ -14,9 +14,14 @@ exports.listarUsuarios = async (req, res) => {
 
 exports.crearUsuario = async (req, res) => {
   try {
-    const { username, password_hash, rol, nombre, apellido, gestionId } = req.body;
-    const nuevo = await Usuario.create({ username, password_hash, rol, nombre, apellido, gestionId, estado: true });
-    res.status(201).json(nuevo);
+    const { username, password, rol, nombre, apellido, gestiones = [] } = req.body;
+    const password_hash = await hashPassword(password);
+    const nuevo = await Usuario.create({ username, password_hash, rol, nombre, apellido, estado: 'activo' });
+    if (gestiones.length) {
+      await nuevo.setGestions(gestiones);
+    }
+    const usuario = await Usuario.findByPk(nuevo.id, { include: [{ model: Gestion }] });
+    res.status(201).json(usuario);
   } catch (error) {
     console.error(error);
     res.status(500).json({ mensaje: 'Error al crear usuario' });
@@ -26,9 +31,17 @@ exports.crearUsuario = async (req, res) => {
 exports.actualizarUsuario = async (req, res) => {
   try {
     const { id } = req.params;
-    const campos = req.body;
-    await Usuario.update(campos, { where: { id } });
-    res.json({ mensaje: 'Usuario actualizado' });
+    const { password, gestiones, ...resto } = req.body;
+    if (password) {
+      resto.password_hash = await hashPassword(password);
+    }
+    await Usuario.update(resto, { where: { id } });
+    const usuario = await Usuario.findByPk(id);
+    if (gestiones) {
+      await usuario.setGestions(gestiones);
+    }
+    const actualizado = await Usuario.findByPk(id, { include: [{ model: Gestion }] });
+    res.json(actualizado);
   } catch (error) {
     console.error(error);
     res.status(500).json({ mensaje: 'Error al actualizar usuario' });
