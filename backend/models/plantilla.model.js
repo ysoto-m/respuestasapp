@@ -16,7 +16,7 @@ const Plantilla = sequelize.define('Plantilla', {
   },
   visible: {
     type: DataTypes.BOOLEAN,
-    defaultValue: true
+    // default removed; routes must set value explicitly
   }
 }, {
   tableName: 'Plantillas'

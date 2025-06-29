@@ -18,7 +18,8 @@ exports.register = async (req, res) => {
       password_hash,
       rol,
       nombre,
-      apellido
+      apellido,
+      estado: 'activo'
     });
 
     res.status(201).json({
