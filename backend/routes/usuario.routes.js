@@ -9,9 +9,9 @@ const roleMiddleware = require('../middlewares/role.middleware');
 router.use(authMiddleware);
 
 // Rutas
-router.get('/', usuarioController.listarUsuarios);
-router.post('/', roleMiddleware('sistema'), usuarioController.crearUsuario);
-router.put('/:id', roleMiddleware('sistema'), usuarioController.actualizarUsuario);
+router.get('/', roleMiddleware('sistema', 'supervisor'), usuarioController.listarUsuarios);
+router.post('/', roleMiddleware('sistema', 'supervisor'), usuarioController.crearUsuario);
+router.put('/:id', roleMiddleware('sistema', 'supervisor'), usuarioController.actualizarUsuario);
 router.patch('/:id/estado', roleMiddleware('sistema'), usuarioController.cambiarEstadoUsuario);
 
 

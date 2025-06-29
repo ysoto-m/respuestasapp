@@ -4,7 +4,24 @@ const { hashPassword } = require('../utils/hash');
 exports.listarUsuarios = async (req, res) => {
   try {
     const include = [{ model: Gestion, through: { attributes: [] } }];
-    const usuarios = await Usuario.findAll({ include });
+    let usuarios;
+
+    if (req.usuario.rol === 'supervisor') {
+      const supervisor = await Usuario.findByPk(req.usuario.id, {
+        include: [{ model: Gestion }]
+      });
+      const gestionIds = supervisor.Gestions.map(g => g.id);
+      usuarios = await Usuario.findAll({
+        include,
+        where: {
+          '$Gestions.id$': gestionIds
+        },
+        distinct: true
+      });
+    } else {
+      usuarios = await Usuario.findAll({ include });
+    }
+
     res.json(usuarios);
   } catch (error) {
     console.error(error);
@@ -14,7 +31,17 @@ exports.listarUsuarios = async (req, res) => {
 
 exports.crearUsuario = async (req, res) => {
   try {
-    const { username, password, rol, nombre, apellido, gestiones = [] } = req.body;
+    let { username, password, rol, nombre, apellido, gestiones = [] } = req.body;
+
+    if (req.usuario.rol === 'supervisor') {
+      if (rol !== 'agente') {
+        return res.status(403).json({ mensaje: 'Supervisores solo pueden crear usuarios con rol agente' });
+      }
+      const supervisor = await Usuario.findByPk(req.usuario.id, { include: [{ model: Gestion }] });
+      const allowedIds = supervisor.Gestions.map(g => g.id);
+      gestiones = gestiones.filter(id => allowedIds.includes(id));
+    }
+
     const password_hash = await hashPassword(password);
     const nuevo = await Usuario.create({ username, password_hash, rol, nombre, apellido, estado: 'activo' });
     if (gestiones.length) {
@@ -31,10 +58,27 @@ exports.crearUsuario = async (req, res) => {
 exports.actualizarUsuario = async (req, res) => {
   try {
     const { id } = req.params;
-    const { password, gestiones, ...resto } = req.body;
+    let { password, gestiones, rol, ...resto } = req.body;
+
+    if (req.usuario.rol === 'supervisor') {
+      if (rol && rol !== 'agente') {
+        return res.status(403).json({ mensaje: 'Supervisores solo pueden asignar rol agente' });
+      }
+      const supervisor = await Usuario.findByPk(req.usuario.id, { include: [{ model: Gestion }] });
+      const allowedIds = supervisor.Gestions.map(g => g.id);
+      if (gestiones) {
+        gestiones = gestiones.filter(idG => allowedIds.includes(idG));
+      }
+      rol = 'agente';
+    }
+
     if (password) {
       resto.password_hash = await hashPassword(password);
     }
+    if (rol) {
+      resto.rol = rol;
+    }
+
     await Usuario.update(resto, { where: { id } });
     const usuario = await Usuario.findByPk(id);
     if (gestiones) {
