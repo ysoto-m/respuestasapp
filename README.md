@@ -5,14 +5,13 @@ This project uses **Vite** with **React** and **Tailwind CSS**.
 ## Tailwind setup
 
 Tailwind is integrated using the `@tailwindcss/vite` plugin and PostCSS.
-The Tailwind directives are placed in `frontend/src/index.css` and compiled
-through Vite:
+The CSS entry file `frontend/src/index.css` imports all Tailwind layers:
 
 ```css
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 ```
+
+These styles are then built through Vite and PostCSS.
 
 The configuration files used by Vite and Tailwind are:
 
