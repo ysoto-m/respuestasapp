@@ -1,7 +1,7 @@
 module.exports = function (...rolesPermitidos) {
   return (req, res, next) => {
     try {
-      if (!req.user || !rolesPermitidos.includes(req.user.rol)) {
+      if (!req.usuario || !rolesPermitidos.includes(req.usuario.rol)) {
         return res.status(403).json({ error: 'Acceso denegado' });
       }
       next();
