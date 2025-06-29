@@ -5,6 +5,7 @@ This project uses **Vite** with **React** and **Tailwind CSS**.
 ## Tailwind setup
 
 Tailwind is integrated using the `@tailwindcss/vite` plugin and PostCSS.
+
 The CSS entry file `frontend/src/index.css` imports all Tailwind layers:
 
 ```css
