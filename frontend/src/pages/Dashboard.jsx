@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from '../api/axios';
+import api from '../api/axios';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 
@@ -29,7 +29,7 @@ const Dashboard = () => {
 
   const cargarUsuarios = async () => {
     try {
-      const res = await axios.get('/usuarios', {
+      const res = await api.get('/usuarios', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUsuarios(res.data);
@@ -41,7 +41,7 @@ const Dashboard = () => {
 
   const cargarGestiones = async () => {
     try {
-      const res = await axios.get('/gestiones', {
+      const res = await api.get('/gestiones', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setGestiones(res.data.map(g => ({ value: g.id, label: g.nombre })));
@@ -53,7 +53,7 @@ const Dashboard = () => {
 
   const cargarPlantillas = async () => {
     try {
-      const res = await axios.get('/plantillas', {
+      const res = await api.get('/plantillas', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setPlantillas(res.data);
@@ -64,7 +64,7 @@ const Dashboard = () => {
 
   const crearUsuario = async () => {
     try {
-      await axios.post('/usuarios', {
+      await api.post('/usuarios', {
         ...formUsuario,
         gestiones: gestionesSeleccionadas.map(g => g.value)
       }, { headers: { Authorization: `Bearer ${token}` } });
@@ -79,7 +79,7 @@ const Dashboard = () => {
 
   const agregarGestion = async () => {
     try {
-      await axios.post('/gestiones', { nombre: nuevaGestion }, { headers: { Authorization: `Bearer ${token}` } });
+      await api.post('/gestiones', { nombre: nuevaGestion }, { headers: { Authorization: `Bearer ${token}` } });
       setNuevaGestion('');
       cargarGestiones();
     } catch (err) {
@@ -89,7 +89,7 @@ const Dashboard = () => {
 
   const agregarPlantilla = async () => {
     try {
-      await axios.post('/plantillas', { texto: nuevaPlantilla, gestionId: gestionPlantillaId }, { headers: { Authorization: `Bearer ${token}` } });
+      await api.post('/plantillas', { texto: nuevaPlantilla, gestionId: gestionPlantillaId }, { headers: { Authorization: `Bearer ${token}` } });
       setNuevaPlantilla('');
       setGestionPlantillaId('');
       cargarPlantillas();
@@ -100,7 +100,7 @@ const Dashboard = () => {
 
   const cambiarVisibilidad = async (id, visible) => {
     try {
-      await axios.put(`/plantillas/${id}/visible`, { visible }, { headers: { Authorization: `Bearer ${token}` } });
+      await api.put(`/plantillas/${id}/visible`, { visible }, { headers: { Authorization: `Bearer ${token}` } });
       cargarPlantillas();
     } catch (err) {
       console.error('Error al actualizar plantilla:', err);
@@ -109,7 +109,7 @@ const Dashboard = () => {
 
   const cambiarEstado = async (id) => {
     try {
-      await axios.patch(`/usuarios/${id}/estado`, {}, {
+      await api.patch(`/usuarios/${id}/estado`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       cargarUsuarios();
