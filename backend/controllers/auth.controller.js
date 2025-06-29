@@ -1,4 +1,5 @@
 const Usuario = require('../models/usuario.model');
+const { Gestion } = require('../models');
 const { hashPassword, comparePasswords } = require('../utils/hash');
 const { generateToken } = require('../utils/jwt');
 
@@ -55,16 +56,15 @@ exports.login = async (req, res) => {
       apellido: user.apellido
     });
 
+    const fullUser = await Usuario.findByPk(user.id, {
+      include: [{ model: Gestion }]
+    });
+    const { password_hash, ...userData } = fullUser.toJSON();
+
     res.json({
       message: 'Login exitoso',
       token,
-      user: {
-        id: user.id,
-        username: user.username,
-        rol: user.rol,
-        nombre: user.nombre,
-        apellido: user.apellido
-      }
+      user: userData
     });
   } catch (err) {
     console.error('🔥 Error en login:', err);

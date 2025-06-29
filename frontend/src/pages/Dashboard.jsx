@@ -22,7 +22,9 @@ const Dashboard = () => {
   const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
   const esSistema = usuario.rol === 'sistema';
   const esSupervisor = usuario.rol === 'supervisor';
-  const [usuarioGestionIds, setUsuarioGestionIds] = useState([]);
+  const [usuarioGestionIds, setUsuarioGestionIds] = useState(
+    usuario.Gestions ? usuario.Gestions.map(g => g.id) : []
+  );
   const [gestionPlantillaId, setGestionPlantillaId] = useState('');
 
   const cargarUsuarios = async () => {
@@ -31,12 +33,6 @@ const Dashboard = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUsuarios(res.data);
-      if (esSupervisor) {
-        const yo = res.data.find(u => u.id === usuario.id);
-        if (yo && yo.Gestions) {
-          setUsuarioGestionIds(yo.Gestions.map(g => g.id));
-        }
-      }
     } catch (err) {
       console.error('Error al cargar usuarios:', err);
       setError('Error al cargar usuarios');
