@@ -16,10 +16,11 @@ through Vite:
 
 The configuration files used by Vite and Tailwind are:
 
-- `frontend/vite.config.js` – Vite configuration which loads React and the
-  Tailwind plugin.
-- `frontend/postcss.config.js` – defines the PostCSS plugins so Tailwind can
-  process the CSS.
+- `frontend/vite.config.js` – Vite configuration which loads React and the Tailwind plugin.
+  ```js
+  plugins: [react(), tailwindcss()]
+  ```
+- `frontend/postcss.config.js` – defines the PostCSS plugins so Tailwind can process the CSS.
 - `frontend/tailwind.config.js` – Tailwind settings and content paths.
 
 Run the development server from the `frontend` directory:
