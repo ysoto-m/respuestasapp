@@ -21,6 +21,9 @@ const Dashboard = () => {
   const token = localStorage.getItem('token');
   const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
   const esSistema = usuario.rol === 'sistema';
+  const esSupervisor = usuario.rol === 'supervisor';
+  const [usuarioGestionIds, setUsuarioGestionIds] = useState([]);
+  const [gestionPlantillaId, setGestionPlantillaId] = useState('');
 
   const cargarUsuarios = async () => {
     try {
@@ -28,6 +31,12 @@ const Dashboard = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUsuarios(res.data);
+      if (esSupervisor) {
+        const yo = res.data.find(u => u.id === usuario.id);
+        if (yo && yo.Gestions) {
+          setUsuarioGestionIds(yo.Gestions.map(g => g.id));
+        }
+      }
     } catch (err) {
       console.error('Error al cargar usuarios:', err);
       setError('Error al cargar usuarios');
@@ -84,8 +93,9 @@ const Dashboard = () => {
 
   const agregarPlantilla = async () => {
     try {
-      await axios.post('/plantillas', { texto: nuevaPlantilla }, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.post('/plantillas', { texto: nuevaPlantilla, gestionId: gestionPlantillaId }, { headers: { Authorization: `Bearer ${token}` } });
       setNuevaPlantilla('');
+      setGestionPlantillaId('');
       cargarPlantillas();
     } catch (err) {
       console.error('Error al crear plantilla:', err);
@@ -119,6 +129,10 @@ const Dashboard = () => {
     cargarPlantillas();
   }, []);
 
+  const gestionesPlantilla = esSupervisor
+    ? gestiones.filter(g => usuarioGestionIds.includes(g.value))
+    : gestiones;
+
   return (
     <div className="p-8">
       <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
@@ -128,9 +142,11 @@ const Dashboard = () => {
 
       <div className="flex gap-4 mb-4">
         <button onClick={() => setMostrarNuevo(true)} className="bg-blue-600 text-white px-4 py-2 rounded">Nuevo usuario</button>
-        {esSistema && (
+        {(esSistema || esSupervisor) && (
           <>
-            <button onClick={() => setMostrarGestiones(true)} className="bg-green-600 text-white px-4 py-2 rounded">Administrar gestiones</button>
+            {esSistema && (
+              <button onClick={() => setMostrarGestiones(true)} className="bg-green-600 text-white px-4 py-2 rounded">Administrar gestiones</button>
+            )}
             <button onClick={() => setMostrarPlantillas(true)} className="bg-purple-600 text-white px-4 py-2 rounded">Gestión de plantillas</button>
           </>
         )}
@@ -230,6 +246,12 @@ const Dashboard = () => {
           <div className="bg-white p-6 rounded w-96">
             <h2 className="text-xl font-bold mb-4">Plantillas</h2>
             <textarea className="border p-2 w-full mb-2" rows="3" placeholder="Texto de la plantilla" value={nuevaPlantilla} onChange={e => setNuevaPlantilla(e.target.value)} />
+            <select className="border p-2 w-full mb-2" value={gestionPlantillaId} onChange={e => setGestionPlantillaId(Number(e.target.value))}>
+              <option value="">Seleccione gestión</option>
+              {gestionesPlantilla.map(g => (
+                <option key={g.value} value={g.value}>{g.label}</option>
+              ))}
+            </select>
             <div className="flex justify-end mb-4">
               <button onClick={agregarPlantilla} className="bg-purple-600 text-white px-4 py-2 rounded">Guardar</button>
             </div>
