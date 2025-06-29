@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { Plantilla } = require('../models');
 const auth = require('../middlewares/auth.middleware');
+const roleMiddleware = require('../middlewares/role.middleware');
 
 router.use(auth);
 
@@ -14,8 +15,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
-  if (req.usuario.rol !== 'sistema') return res.status(403).json({ mensaje: 'No autorizado' });
+router.post('/', roleMiddleware('sistema'), async (req, res) => {
   try {
     const { texto } = req.body;
     const nueva = await Plantilla.create({ texto, visible: true });
@@ -25,8 +25,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.put('/:id/visible', async (req, res) => {
-  if (req.usuario.rol !== 'sistema') return res.status(403).json({ mensaje: 'No autorizado' });
+router.put('/:id/visible', roleMiddleware('sistema'), async (req, res) => {
   try {
     const plantilla = await Plantilla.findByPk(req.params.id);
     if (!plantilla) return res.status(404).json({ mensaje: 'No encontrada' });

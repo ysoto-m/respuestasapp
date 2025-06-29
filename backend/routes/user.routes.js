@@ -5,7 +5,7 @@ const verifyToken = require('../middlewares/auth.middleware');
 router.get('/me', verifyToken, (req, res) => {
   res.json({
     message: 'Token válido',
-    user: req.user
+    user: req.usuario
   });
 });
 
