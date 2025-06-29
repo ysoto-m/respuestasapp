@@ -32,7 +32,7 @@ const Usuario = sequelize.define('Usuario', {
   },
   estado: {
     type: DataTypes.STRING,
-    defaultValue: 'activo',
+    //defaultValue: 'activo',
     allowNull: false
   },
   createdAt: {
