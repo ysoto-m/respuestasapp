@@ -1,34 +1,39 @@
-// routes/gestion.routes.js
 const express = require('express');
 const router = express.Router();
-const { Gestion } = require('../models/gestion.model');
+const { Gestion } = require('../models');
+const auth = require('../middlewares/auth.middleware');
+
+router.use(auth);
 
 router.get('/', async (req, res) => {
   try {
     const gestiones = await Gestion.findAll({ attributes: ['id', 'nombre'] });
     res.json(gestiones);
   } catch (err) {
-    console.error('Error al listar gestiones:', err);
     res.status(500).json({ mensaje: 'Error al obtener gestiones' });
   }
 });
-// routes/gestion.routes.js
+
 router.post('/', async (req, res) => {
-  const { nombre } = req.body;
-  const nueva = await Gestion.create({ nombre });
-  res.status(201).json(nueva);
+  if (req.usuario.rol !== 'sistema') return res.status(403).json({ mensaje: 'No autorizado' });
+  try {
+    const { nombre } = req.body;
+    const nueva = await Gestion.create({ nombre });
+    res.status(201).json(nueva);
+  } catch (err) {
+    res.status(500).json({ mensaje: 'Error al crear gestion' });
+  }
 });
 
 router.put('/:id', async (req, res) => {
-  const { nombre } = req.body;
-  await Gestion.update({ nombre }, { where: { id: req.params.id } });
-  res.json({ mensaje: 'Actualizado' });
+  if (req.usuario.rol !== 'sistema') return res.status(403).json({ mensaje: 'No autorizado' });
+  try {
+    const { nombre } = req.body;
+    await Gestion.update({ nombre }, { where: { id: req.params.id } });
+    res.json({ mensaje: 'Actualizado' });
+  } catch (err) {
+    res.status(500).json({ mensaje: 'Error al actualizar' });
+  }
 });
-
-router.delete('/:id', async (req, res) => {
-  await Gestion.destroy({ where: { id: req.params.id } });
-  res.json({ mensaje: 'Eliminado' });
-});
-
 
 module.exports = router;
