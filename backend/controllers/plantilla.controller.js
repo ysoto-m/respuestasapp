@@ -4,7 +4,7 @@ const { Plantilla } = require('../models');
 exports.crearPlantilla = async (req, res) => {
   try {
     const { titulo, contenido, icono } = req.body;
-    const { id: usuarioId, rol } = req.user;
+    const { id: usuarioId, rol } = req.usuario;
 
     if (rol !== 'supervisor') return res.status(403).json({ error: 'Solo supervisores pueden crear plantillas' });
 
@@ -29,7 +29,7 @@ exports.obtenerPlantillas = async (req, res) => {
 exports.eliminarPlantilla = async (req, res) => {
   try {
     const { id } = req.params;
-    const { rol, id: userId } = req.user;
+    const { rol, id: userId } = req.usuario;
 
     const plantilla = await Plantilla.findByPk(id);
     if (!plantilla) return res.status(404).json({ error: 'Plantilla no encontrada' });

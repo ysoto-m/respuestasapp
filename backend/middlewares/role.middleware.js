@@ -1,7 +1,8 @@
-module.exports = function (...rolesPermitidos) {
+function roleMiddleware(...rolesPermitidos) {
   return (req, res, next) => {
     try {
-      if (!req.usuario || !rolesPermitidos.includes(req.usuario.rol)) {
+      const { usuario } = req;
+      if (!usuario || !rolesPermitidos.includes(usuario.rol)) {
         return res.status(403).json({ error: 'Acceso denegado' });
       }
       next();
@@ -10,4 +11,6 @@ module.exports = function (...rolesPermitidos) {
       return res.status(500).json({ error: 'Error interno' });
     }
   };
-};
+}
+
+module.exports = roleMiddleware;
