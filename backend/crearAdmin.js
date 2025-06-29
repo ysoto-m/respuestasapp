@@ -13,7 +13,8 @@ const { hashPassword } = require('./utils/hash');
       password_hash,
       rol: 'sistema',
       nombre: 'Admin',
-      apellido: 'Principal'
+      apellido: 'Principal',
+      estado: 'activo'
     });
 
     console.log('✅ Usuario admin creado:', admin.username);
