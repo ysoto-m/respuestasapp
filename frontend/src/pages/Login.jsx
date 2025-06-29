@@ -11,8 +11,9 @@ export default function Login() {
     e.preventDefault();
     try {
       const res = await axios.post('/auth/login', { username, password });
-      localStorage.setItem('token', res.data.token);
-      localStorage.setItem('usuario', JSON.stringify(res.data.user));
+      const { token, user } = res.data;
+      localStorage.setItem('token', token);
+      localStorage.setItem('usuario', JSON.stringify(user));
       navigate('/dashboard');
     } catch (err) {
       alert('Credenciales incorrectas');
